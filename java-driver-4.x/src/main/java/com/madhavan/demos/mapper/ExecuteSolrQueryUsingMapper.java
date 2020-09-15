@@ -12,51 +12,85 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
  *
  */
 public class ExecuteSolrQueryUsingMapper {
-    private static final String searchDatacenterName = "search";
-    public static void main(String[] args) {
-	try (CqlSession session = new CqlSessionBuilder()
-		//.withAuthCredentials(System.getProperty("uid"), System.getProperty("pwd"))
-                .build()) {
-	    createSchema(session);
-	    insertSampleData(session);
-	    selectDataBySearchIndexColumn(session, 5);
-	}
-	System.out.println("----DONE----");
-    }
+  private static final String searchDatacenterName = "dc1";
+  public static void main(String[] args) {
+    try (CqlSession session = new CqlSessionBuilder()
+        //.withAuthCredentials(System.getProperty("uid"), System.getProperty("pwd"))
+        .build()) {
 
-    private static void createSchema(CqlSession session) {
-	session.execute("CREATE KEYSPACE IF NOT EXISTS test "
-		+ "WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println("Creating schema: ");
+      createSchema(session);
 
-	session.execute(
-		"CREATE TABLE IF NOT EXISTS test.tbl_sample_mapper_solr_query (id int, value int, PRIMARY KEY (id))");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println("inserting data: ");
 
-	SimpleStatement createSearchIndexStmt = SimpleStatement.builder(
-		"CREATE SEARCH INDEX IF NOT EXISTS ON test.tbl_sample_mapper_solr_query WITH COLUMNS value AND PROFILES spaceSavingNoJoin")
-		.setExecutionProfileName(searchDatacenterName)// Update to Search enabled DC name
-		.build();
+      insertSampleData(session);
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println(" ");
+      System.out.println("searching data: ");
 
-	session.execute(createSearchIndexStmt);
-    }
+      selectDataBySearchIndexColumn(session, 5);
+        }
+    System.out.println("----DONE----");
+  }
 
-    private static void insertSampleData(CqlSession session) {
-	session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (1,1)");
-	session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (2,2)");
-	session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (3,3)");
-	session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (4,4)");
-	session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (5,5)");
-    }
-    
-    private static void selectDataBySearchIndexColumn(CqlSession session, int value) {
-	ExampleMapper exampleMapper = ExampleMapper.builder(session)
-		//Schema validation adds a small startup overhead, so once your application is stable you may want to disable it
-		.withSchemaValidationEnabled(false)
-		.build();
-	
-	ExampleDao exampleDao = exampleMapper.exampleDao(searchDatacenterName, "test", "tbl_sample_mapper_solr_query");
-	
-	System.out.println("Result is: " + (exampleDao.findById(value)).toString());
-	
-	System.out.println("Search result is: " + (exampleDao.findByValueSearchIndex("value:" + String.valueOf(value))));
-    }
+  private static void createSchema(CqlSession session) {
+    session.execute("CREATE KEYSPACE IF NOT EXISTS test "
+        + "WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}");
+
+    session.execute(
+        "CREATE TABLE IF NOT EXISTS test.tbl_sample_mapper_solr_query (id int, value int, PRIMARY KEY (id))");
+
+    SimpleStatement createSearchIndexStmt = SimpleStatement.builder(
+        "CREATE SEARCH INDEX IF NOT EXISTS ON test.tbl_sample_mapper_solr_query WITH COLUMNS value AND PROFILES spaceSavingNoJoin")
+      .setExecutionProfileName(searchDatacenterName)// Update to Search enabled DC name
+      .build();
+
+    session.execute(createSearchIndexStmt);
+  }
+
+  private static void insertSampleData(CqlSession session) {
+    session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (1,1)");
+    session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (2,2)");
+    session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (3,3)");
+    session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (4,4)");
+    session.execute("INSERT INTO test.tbl_sample_mapper_solr_query(id,value) VALUES (5,5)");
+  }
+
+  private static void selectDataBySearchIndexColumn(CqlSession session, int value) {
+    ExampleMapper exampleMapper = ExampleMapper.builder(session)
+      //Schema validation adds a small startup overhead, so once your application is stable you may want to disable it
+      .withSchemaValidationEnabled(false)
+      .build();
+
+    ExampleDao exampleDao = exampleMapper.exampleDao(searchDatacenterName, "test", "tbl_sample_mapper_solr_query");
+
+    System.out.println(" ");
+    System.out.println(" ");
+    System.out.println(" ");
+
+    System.out.println("Result is: " + (exampleDao.findById(value)).toString());
+
+    System.out.println(" ");
+    System.out.println(" ");
+    System.out.println(" ");
+
+    System.out.println("Search result is: " + (exampleDao.findByValueSearchIndex("value:" + String.valueOf(value))));
+    System.out.println(" ");
+    System.out.println(" ");
+    System.out.println(" ");
+
+    System.out.println("Search using @Query result is: " + (exampleDao.findByValueSearchIndex("value:" + String.valueOf(value))));
+
+    System.out.println("Search using @Select(customerWhereClause) result is: " + (exampleDao.findByValueSearchIndex1("value:" + String.valueOf(value))));
+  }
 }
