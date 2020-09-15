@@ -91,6 +91,12 @@ public class ExecuteSolrQueryUsingMapper {
 
     System.out.println("Search using @Query result is: " + (exampleDao.findByValueSearchIndex("value:" + String.valueOf(value))));
 
+    System.out.println(" ");
+    System.out.println(" ");
+    System.out.println(" ");
     System.out.println("Search using @Select(customerWhereClause) result is: " + (exampleDao.findByValueSearchIndex1("value:" + String.valueOf(value))));
+    System.out.println(" ");
+    System.out.println(" ");
+    System.out.println(" ");
   }
 }
